@@ -1,0 +1,4 @@
+.env
+/csv/*.csv
+*.session
+.vscode/
