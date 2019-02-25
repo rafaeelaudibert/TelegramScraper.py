@@ -19,6 +19,9 @@ client = TelegramClient(phone, api_id, api_hash)
 client.connect()
 if not client.is_user_authorized():
     client.send_code_request(phone)
+    print('The following code which you should provide is not stored anywhere but your own computer.')
+    print('Feel free to delete the .session file after you are done using this code.')
+    print('You can check how this code is secured looking at the Telethon package')
     client.sign_in(phone, input('Enter the code: '))
 
 GROUP_ID = int(os.getenv('GROUP_ID'))
