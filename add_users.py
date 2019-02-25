@@ -38,32 +38,34 @@ if ADD_TO_GROUP or ADD_TO_CHANNEL:
         headers = next(reader)
 
         for raw_user in reader:
-            user = client.get_entity(PeerUser(int(raw_user[1])))
-            print(f"Attempting to add #{user.id} - {user.username}")
+            try:
+                user = client.get_entity(PeerUser(int(raw_user[1])))
+                print(f"Attempting to add #{user.id} - {user.username}")
 
-            # Adding to a group
-            if ADD_TO_GROUP:
-                try:
-                    client(AddChatUserRequest(GROUP_ID, user.id, fwd_limit=10))
-                except UserAlreadyParticipantError:
-                    print(f"User {user.username} is already a group participant")
-                else:
-                    print(f"User {user.username} successfully added to the group")
+                # Adding to a group
+                if ADD_TO_GROUP:
+                    try:
+                        client(AddChatUserRequest(GROUP_ID, user.id, fwd_limit=10))
+                    except UserAlreadyParticipantError:
+                        print(f"User {user.username} is already a group participant")
+                    else:
+                        print(f"User {user.username} successfully added to the group")
 
-            # Adding to a SuperGroup/Channel
-            if ADD_TO_CHANNEL:
-                try:            
-                    client(InviteToChannelRequest(CHANNEL, [user.id]))
-                except UserNotMutualContactError:
-                    print(f"User {user.username} is not a mutual contact")
-                except UserAlreadyParticipantError:
-                    print(f"User {user.username} is already a channel/supergroup participant")
-                else:
-                    print(f"User {user.username} successfully added to the channel")
+                # Adding to a SuperGroup/Channel
+                if ADD_TO_CHANNEL:
+                    try:            
+                        client(InviteToChannelRequest(CHANNEL, [user.id]))
+                    except UserNotMutualContactError:
+                        print(f"User {user.username} is not a mutual contact")
+                    except UserAlreadyParticipantError:
+                        print(f"User {user.username} is already a channel/supergroup participant")
+                    else:
+                        print(f"User {user.username} successfully added to the channel")
 
-            # Sleep between 30 and 50 seconds
-            sleep_time = 40 + random.randint(-10, 11)
-            print(f"Sleeping for {sleep_time} seconds")
-            time.sleep(sleep_time)    
-
+                # Sleep between 30 and 50 seconds
+                sleep_time = 40 + random.randint(-10, 11)
+                print(f"Sleeping for {sleep_time} seconds")
+                time.sleep(sleep_time)    
+            except ValueError:
+                print(f"Value error, skipping {raw_user[0]}")
 
