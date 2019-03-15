@@ -2,7 +2,7 @@ from telethon.sync import TelegramClient
 from telethon import functions, types
 from telethon.tl.functions.messages import AddChatUserRequest
 from telethon.tl.functions.channels import InviteToChannelRequest
-from telethon.errors.rpcerrorlist import UserAlreadyParticipantError, UserNotMutualContactError, UserPrivacyRestrictedError
+from telethon.errors.rpcerrorlist import UserAlreadyParticipantError, UserNotMutualContactError, UserPrivacyRestrictedError, SessionPasswordNeededError
 from telethon.tl.types import PeerUser, PeerChat, PeerChannel, UserStatusOnline, UserStatusLastWeek, UserStatusRecently, UserStatusOffline
 from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
@@ -22,14 +22,21 @@ load_dotenv()
 api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')
 phone = os.getenv('PHONE')
+password = os.getenv('PASSWORD')
 client = TelegramClient(phone, api_id, api_hash)
 
 client.connect()
 if not client.is_user_authorized():
     client.send_code_request(phone)
-    print('The following code which you should provide is not stored anywhere but your own computer.')
-    print('Feel free to delete the .session file after you are done using this code.')
-    print('You can check how this code is secured looking at the Telethon package')
+    try:
+        print('The following code which you should provide is not stored anywhere but your own computer.')
+        print('Feel free to delete the .session file after you are done using this code.')
+        print('You can check how this code is secured looking at the Telethon package')
+        
+        client.sign_in(phone, input('Enter the code: '))
+    except SessionPasswordNeededError:
+        client.sign_in(password=password)
+    
     client.sign_in(phone, input('Enter the code: '))
 
 GROUP_ID = int(os.getenv('GROUP_ID'))
